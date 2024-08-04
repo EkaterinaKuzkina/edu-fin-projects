@@ -1,20 +1,20 @@
+#include <cassert>
 #include <iostream>
 #include <set>
-#include <cassert>
 
 namespace binary_tree
 {
 struct Order
 {
+    int id;
+    double price;
+    double quantity;
+
     Order(int id, double price, double quantity)
         : id(id), price(price), quantity(quantity) {};
 
     // used for set ordering
     bool operator<(const Order& other) const { return price < other.price; }
-
-    int id;
-    double price;
-    double quantity;
 };
 
 class LimitOrderBook
@@ -26,6 +26,7 @@ class LimitOrderBook
 
 public:
     LimitOrderBook(int depth) : depth(depth) {};
+    // O(log n)
     void add_order(const Order& order, bool is_bid)
     {
         if (is_bid) {
@@ -52,6 +53,7 @@ public:
         }
     }
 
+    // O(log n)
     void delete_order(const Order& order, bool is_bid)
     {
         if (is_bid) {
@@ -67,6 +69,7 @@ public:
     }
 
     // Max price is the best - we want somebody who is willing to pay the higherst price
+    // O(1)
     double get_best_bid()
     {
         if (orders_bid.size()) {
@@ -75,7 +78,8 @@ public:
         return 0.0;
     }
 
-    // Min price is the best - we want somebody who is selling by the lowest price
+    // Min price is the best - we want somebody who is selling by the lowest price 
+    // O(1)
     double get_best_ask()
     {
         if (orders_ask.size()) {
@@ -141,8 +145,8 @@ void test_ask()
     std::cout << "best ask " << lob.get_best_ask() << "\n";
 }
 
-int main()
-{
-    test_bid();
-    test_ask();
-}
+// int main()
+// {
+//     test_bid();
+//     test_ask();
+// }
