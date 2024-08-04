@@ -1,2 +1,2 @@
-# edu-projects
-Personal educational projects
+# Educational Financial Projects
+Personal educational projects in Finance
