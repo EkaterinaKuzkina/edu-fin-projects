@@ -43,6 +43,7 @@ public:
     LimitOrderBook(int depth)
         : depth(depth), size(0), head(nullptr), tail(nullptr) {};
 
+    // O(N)
     void add_order(const Order& in_order)
     {
         Order* order = new Order(in_order);
@@ -52,9 +53,9 @@ public:
                 return;
             }
             else {
-                auto& temp = head;
+                Order* temp = head;
                 head = head->next;
-                delete head;
+                delete temp;
                 size--;
             }
         }
@@ -62,11 +63,11 @@ public:
             order->next = head;
             head = order;
             if (!tail) {
-                tail = order;
+                tail = head;
             }
         }
         else {
-            auto temp = head;
+            auto* temp = head;
             while (temp->price < order->price && temp->next != nullptr) {
                 temp = temp->next;
             }
@@ -82,28 +83,91 @@ public:
         size++;
     }
 
-    void delete_order(Order order);
-    double get_best_bid();
+    // O(N)
+    void delete_order(const Order& order)
+    {
+        if (!head) {
+            return;
+        }
+        if (head->price == order.price && order.quantity == head->quantity) {
+            if (head->next) {
+                Order* tmp = head;
+                head = head->next;
+                delete tmp;
+            }
+            else {
+                Order* tmp = head;
+                head = nullptr;
+                delete tmp;
+            }
+            size--;
+            return;
+        }
+
+        Order* tmp = head;
+        while (tmp->next && tmp->next->price != order.price &&
+               order.quantity != tmp->next->quantity) {
+            tmp = tmp->next;
+        }
+        if (tmp->next) {
+            Order* to_delete = tmp->next;
+            if (to_delete == tail) {
+                tail = tmp;
+            }
+            tmp->next = tmp->next->next;
+            delete to_delete;
+            size--;
+            return;
+        }
+    }
+
+    // Values in list store in ascendic order, tail has the biggerst price
+    // O(1)
+    double get_best_bid()
+    {
+        if (tail) {
+            return tail->price;
+        }
+        return -1;
+    }
+
     void print_bid()
     {
-        auto& temp = head;
-        while (temp)
-        {   
-            std::cout << "id: " << temp->id << " price: " << temp->price << " quantity: " << temp->quantity << "\n";
+        if (!head) {
+            return;
+        }
+        auto* temp = head;
+        while (temp) {
+            std::cout << "id: " << temp->id << " price: " << temp->price
+                      << " quantity: " << temp->quantity << "\n";
             temp = temp->next;
         }
     }
+
+    void print_ask();
+    double get_best_ask();
 };
 
 }  // namespace single_linked_list
 
-int main()
+int test_bid()
 {
-    single_linked_list::LimitOrderBook lob(4);
+    single_linked_list::LimitOrderBook lob(3);
     lob.add_order(single_linked_list::Order(10, 22, 0));
     lob.add_order(single_linked_list::Order(17, 11, 1));
     lob.add_order(single_linked_list::Order(8, 20, 3));
     lob.add_order(single_linked_list::Order(22, 78, 2));
-
     lob.print_bid();
+    lob.get_best_bid();
+
+    lob.delete_order(single_linked_list::Order(17, 11, 1));
+    lob.delete_order(single_linked_list::Order(22, 78, 2));
+    lob.delete_order(single_linked_list::Order(10, 22, 0));
+    lob.print_bid();
+    lob.get_best_bid();
+}
+
+int main()
+{
+    test_bid();
 }

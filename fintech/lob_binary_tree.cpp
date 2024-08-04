@@ -78,7 +78,7 @@ public:
         return 0.0;
     }
 
-    // Min price is the best - we want somebody who is selling by the lowest price 
+    // Min price is the best - we want somebody who is selling by the lowest price
     // O(1)
     double get_best_ask()
     {
@@ -145,8 +145,8 @@ void test_ask()
     std::cout << "best ask " << lob.get_best_ask() << "\n";
 }
 
-// int main()
-// {
-//     test_bid();
-//     test_ask();
-// }
+int main()
+{
+    test_bid();
+    test_ask();
+}
